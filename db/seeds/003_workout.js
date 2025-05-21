@@ -10,5 +10,6 @@ exports.seed = async function(knex) {
   await knex('workout').del()
   await knex('workout').insert(initialValue);
   console.log('003seed');
+  console.log(initialValue);
 
 };
