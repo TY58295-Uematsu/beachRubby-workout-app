@@ -10,5 +10,8 @@ exports.seed = async function(knex) {
     {workout_name: 'パス練習'},
     {workout_name: 'サインプレー練習'},
     {workout_name: '試合形式'}
-  ]);
+  ]).returning('id');
+  console.log('002seed');
+  
+  console.log('Inserted workout_menu IDs:', insertedIds); // ログに出力
 };

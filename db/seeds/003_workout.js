@@ -9,4 +9,6 @@ exports.seed = async function(knex) {
   // Deletes ALL existing entries
   await knex('workout').del()
   await knex('workout').insert(initialValue);
+  console.log('003seed');
+
 };

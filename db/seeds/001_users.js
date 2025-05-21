@@ -13,4 +13,6 @@ exports.seed = async function(knex) {
   await knex('users').insert([
     {name: 'master', salt: '', password:'b94d27b9934d3e6d6e8c305561110799331422112d09c52c9d4e27d361001d03'}
   ]);
+  console.log('001seed');
+
 };
