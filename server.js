@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const db = require('./knex');
 const authCheck = require('./authCheck');
+const geminiRouter = require('./routes/gemini')
 
 function setUpServer() {
   // 認証系
@@ -14,6 +15,9 @@ function setUpServer() {
   // express でcookieを取得
   app.use(cookieParser());
   app.use(express.static('public'));
+  app.use(express.json());
+
+  app.use('/api/gemini', geminiRouter)
 
   const sessions = {};
 
@@ -67,7 +71,6 @@ function setUpServer() {
     return result;
   };
 
-  app.use(express.json());
   app.use(express.static(path.join(__dirname, '/public')));
   app.get('/api', async (req, res, next) => {
     const test = await sql();

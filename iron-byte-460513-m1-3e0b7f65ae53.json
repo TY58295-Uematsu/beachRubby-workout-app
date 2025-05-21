@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "iron-byte-460513-m1",
+  "private_key_id": "3e0b7f65ae53741d14bc5727424f904565309032",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDn3gIuANOPuJ06\n+5JGvt3sSDjTTyE308mnO/hqmrhcvlmcB5jqgOctN0aT+vVt+oLNXhl/HaUgjnU3\nEK0suALeHrBKjuNnVnB9DunLnUvITpHIRDkf/Xzwq17umfQbGqY6kQfOUn85PHC4\nhznPk4sG2dDgDb7VSHlPyzDoh6KVCxDPT9mbhaUfZ6CzarrkS1Zq9zxdSh7qctCB\najwnHlCMwjHC7paTUDruuLuB7BsKfRlQkYCkUMQj+JbWi8fHGa7lzoRK7zP76pz6\nCniHHm06CaZBK5VSt4wlizdWPKbv5GYj9MwHGGO9twLgVrIGA5ripeiTSr+zTuKn\niycO+tHVAgMBAAECggEAN8q2WI5vWapQ/wPQr0A3EydPsRzdv9qwr5JhFHm1Oe+9\njStQ0sCAn+Mokuv0iWmZdsQZO3qNJLfSoZTcLqH6YqscvVwDgPaOK7FedVWcig7J\nylgMLNPob9q0hZI66Bix/e6u46j7HvEZqHU1Zmq4rcXUmk0Eabq+IgKg+prEdrsV\nKF/XvOzhZex72Hjqcd6Sr3K9EBwngK/xjqYeYhCQ1ecGRaerqLR8YMOklfNNyc1B\nYtQOzsBCIF5XydVSZGQyQCwWWVJtiA61kmpKq4oyWgixDLC/EUsrcLPQa+AwMrhu\n3Bf8MoD/cSUILLy1y3k9KScuXXKknWl+Htt8oUSnYQKBgQD1ghX9nmUp+MuBbC/8\nuRyilRZHezHlxdXNuJ2KUigg0nUTS0OAV2mhTS3FmbIhfSgu+Ra5E8Gt4xRotUvK\nzXVhczQo7+MFeY/7s9T0MeHxtQN6bqU6W3+BV6GB0dinxPMuNnLjKjc+3VM4SUcZ\nWsQj0Ylup8qNMKrzAUNug0/FkQKBgQDxxrAUphQ2C+H43p9ODY4qNFIMtXbVFpBU\nCIwRLbR3GbfUW1+kmVMIbFHaLZyfyQG2uYqMbYRdz3EBp4KoMszBSV0Ki4BOD1lx\nW6PVMlPWMK4qgE/MFzyCxlPcPW47Ixt3P16IAwBlJveL/vvhOzm9kG2MQxk9uAo5\np3BrXZmWBQKBgQC545NvAv2qN/0us5HqEudBmwzRdtAjIBZwu7ZdQzOrFm8a+sPT\na1xJi7x6f5NGlBNW7bdszy640NVlKtCGb+bOsIHv9SK5xH9mn5VAiHyBnQNTMm/c\nrebvMkDRoOggr5lJhmSa6B4IdWBLoAA7jGQykrcyl81f9leZw30hMj+2YQKBgBXn\nCvKD7RbMUsdJ26Klhbh7DufJ1J8PMTn7oDy6KDwV31pkgLCXlzcPIQcj1KmA+x/D\nhTKdhT0+Wp1swGBeYcAs1jnrU08/ArpLM/dPXNrthAmjoBb8D+ZE8znjcsX2szlF\nS1oE85c2RXywN786r0tl9xaayYGW145LhdqkGxLFAoGBALTUashCSfZhFiiIbCq+\nIupLczTHEQwv8tcE721vpsVphXogH+GeM1nhgkgWsDpAB1gtGzsReQ9k8zgvMvlT\nIBQDPYQU53WScwsEjObJCXXpsqJ6AtstbY1ceLSdHqAK/lcQ4uVEkPEW4OLN2oh6\ncjoRfbNjU43oZpdh5D5vzpFM\n-----END PRIVATE KEY-----\n",
+  "client_email": "beachrugby-gemini@iron-byte-460513-m1.iam.gserviceaccount.com",
+  "client_id": "113346414251051753142",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/beachrugby-gemini%40iron-byte-460513-m1.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
