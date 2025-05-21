@@ -4,7 +4,6 @@
  */
 exports.seed = async function(knex) {
   // Deletes ALL existing entries
-  await knex('workout').del()
   await knex('workout_menu').del()
   await knex('workout_menu').insert([
     {workout_name: '-'},

@@ -4,8 +4,11 @@
  */
 exports.seed = async function(knex) {
   // Deletes ALL existing entries
-  // 先にusersテーブルを参照しているworkout_to_usersテーブルのデータを削除
+  //  users, workout_menu, workout_to_users, workoutについて参照している可能性のあるテーブルのデータをここで削除
   await knex('workout_to_users').del(); 
+  await knex('workout').del(); 
+  await knex('workout_menu').del(); 
+  await knex('users').del(); 
   await knex('users').del()
   await knex('users').insert([
     {name: 'master', salt: '', password:'b94d27b9934d3e6d6e8c305561110799331422112d09c52c9d4e27d361001d03'}
