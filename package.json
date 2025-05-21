@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --require test/setup.js",
-    "start": "node server.js",
+    "start": "node index.js",
     "dev": "nodemon index.js",
     "build": "cd front && npm install && npm run build && rm -rf ../public && cp -r dist ../public",
     "db:init": "knex init",
