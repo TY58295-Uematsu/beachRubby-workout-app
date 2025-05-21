@@ -14,7 +14,6 @@ function setUpServer() {
   app.use(cookieParser());
   app.use(express.static('public'));
 
-  const users = [];
   const sessions = {};
 
   function hashPassword(password, salt) {
@@ -92,23 +91,15 @@ function setUpServer() {
 
   // ログイン
   app.post('/login', async (req, res) => {
-    console.log('loginが来た');
-
     const { userName, password } = req.body;
-    // const user = users.find((user) => user.userName === userName);
     const user = await db('users').where('name', userName).first();
-    console.log(user);
-
-    // 入力されたuser名が存在しなければerror
     if (!user) return res.status(404).send('no data');
-
-    // 入力されたパスワードと、usersの記録から取得したsaltを組み合わせてhash化
     const inputHash = hashPassword(password, user.salt);
     if (inputHash !== user.password) {
       return res.status(404).send('no data');
     }
-
     // ログインが成功したらセッションを手動で作成
+    //セッション作る関数にDB操作も追加したい（sessionオブジェクト無くしたい）
     const sessionId = createSession(userName);
     console.log(sessionId);
     await db('users').where('name', user.name).update('session_id', sessionId);
@@ -118,11 +109,14 @@ function setUpServer() {
   });
 
   // ログアウト
-  app.get('/logout', (req, res) => {
-    console.log('logoutします');
+  app.get('/logout', async(req, res) => {
+    console.log(req.query);
     
+    const userName = req.query.user_name;
     const sessionId = req.cookies.sessionId;
+    //dbから削除に変更
     delete sessions[sessionId];
+    await db('users').where('name', userName).update(`session_id`, null);
     res.clearCookie('sessionId');
     // res.redirect('/');
     res.status(200).send('you logged out succesfully!')

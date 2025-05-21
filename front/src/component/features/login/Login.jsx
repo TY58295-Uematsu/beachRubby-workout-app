@@ -7,7 +7,7 @@ const Login = () => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   let navigate = useNavigate();
-  const { userObj, setUserObj } = useContext(UserContext);
+  const { userGlobal, setUserGlobal } = useContext(UserContext);
 
   const onChangeUserName = (e) => {
     setUserName(e.target.value);
@@ -30,9 +30,9 @@ const Login = () => {
       }),
     })
       .then((res) => res.json())
-      .then(({data}) => {
+      .then(({ data }) => {
         console.log(data);
-        setUserObj(data);
+        setUserGlobal(data);
       });
 
     navigate('/thisweek');
@@ -41,7 +41,7 @@ const Login = () => {
   return (
     <>
       <Header />
-      {userObj}
+      {userGlobal}
       <div className="">
         <h1>ログイン</h1>
         <form>

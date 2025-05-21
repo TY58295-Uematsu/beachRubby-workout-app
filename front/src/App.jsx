@@ -7,10 +7,10 @@ import Home from './component/Home';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
 const useUser = () => {
-  const [userObj, setUserObj] = useState("");
+  const [userGlobal, setUserGlobal] = useState('');
   return {
-    userObj,
-    setUserObj,
+    userGlobal,
+    setUserGlobal,
   };
 };
 export const UserContext = createContext();

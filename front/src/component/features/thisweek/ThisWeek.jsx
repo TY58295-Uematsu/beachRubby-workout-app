@@ -11,8 +11,7 @@ const ThisWeek = () => {
   const [fetchData, setFetchData] = useState([]);
   const [fetchToggle, setFetchToggle] = useState(false);
   const [isDonePost, setIsDonePost] = useState(false);
-    const { userObj, setUserObj } = useContext(UserContext);
-  
+  const { userGlobal, setUserGlobal } = useContext(UserContext);
 
   useEffect(() => {
     console.log('THIsWeek.jsx');
@@ -79,19 +78,18 @@ const ThisWeek = () => {
   useEffect(() => {
     console.log('ssss', fetchData);
     if (fetchData.length) {
-        console.log('qqqq', fetchData);
+      console.log('qqqq', fetchData);
       const url = `api/nextweek?id=${fetchData[0].id}`;
       fetch(url)
         .then((res) => res.json())
-        .then(({data}) => {
-            if (data.length){
-                setIsDonePost(true)
-                console.log("来週の目標はすでにあります");
-                
-            }else{
-                setIsDonePost(false)
-                console.log("来週の目標はまだないです");
-            }
+        .then(({ data }) => {
+          if (data.length) {
+            setIsDonePost(true);
+            console.log('来週の目標はすでにあります');
+          } else {
+            setIsDonePost(false);
+            console.log('来週の目標はまだないです');
+          }
         });
     }
   }, [fetchData, fetchToggle]);
@@ -180,66 +178,67 @@ const ThisWeek = () => {
   };
   return (
     <>
-    <Header />
-{userObj}
-    <main className="">
-      {/* {console.log(thisSunday)} */}
-      <h1>
-        ThisWeek{`${thisSunday.year}年${thisSunday.month}月${thisSunday.date}`}
-      </h1>
-      <div>
-        今回の目標:<label>{fetchData[0]?.objective}</label>
-      </div>
-      <div>
-        {!!fetchData[0]?.youtube_url ? (
-          <a href={fetchData[0]?.youtube_url} target="_blank">
-            動画リンク
-          </a>
-        ) : (
-          <>
-            {' '}
-            <label>動画URL</label>
-            <input
-              type="text"
-              onChange={onChangeUrl}
-              placeholder="URLを入力..."
-            />
-            {youtubeUrl}
-            <button onClick={patchUrl}>登録</button>
-          </>
-        )}
-      </div>
-      <div>
-        <label>反省点:</label>
-        <span>{fetchData[0]?.reflection}</span>
-      </div>
+      <Header />
+      {userGlobal}
+      <main className="">
+        {/* {console.log(thisSunday)} */}
+        <h1>
+          ThisWeek
+          {`${thisSunday.year}年${thisSunday.month}月${thisSunday.date}`}
+        </h1>
+        <div>
+          今回の目標:<label>{fetchData[0]?.objective}</label>
+        </div>
+        <div>
+          {!!fetchData[0]?.youtube_url ? (
+            <a href={fetchData[0]?.youtube_url} target="_blank">
+              動画リンク
+            </a>
+          ) : (
+            <>
+              {' '}
+              <label>動画URL</label>
+              <input
+                type="text"
+                onChange={onChangeUrl}
+                placeholder="URLを入力..."
+              />
+              {youtubeUrl}
+              <button onClick={patchUrl}>登録</button>
+            </>
+          )}
+        </div>
+        <div>
+          <label>反省点:</label>
+          <span>{fetchData[0]?.reflection}</span>
+        </div>
 
-      {/* 入力フォーム */}
-      <div>
-        <br />
-        ----------------------------------------
-        <br />
-        フォーム
-        <br />
-        <label>反省点</label>
-        <input
-          type="text"
-          onChange={onChangeReflection}
-          placeholder="反省点を入力..."
-        />
-        <button onClick={patchRef}>反省</button>
-        <label>次回の目標</label>
-        <input
-          type="text"
-          onChange={onChangeObjective}
-          placeholder="来週の目標を入力..."
-        />
-        <button onClick={postObj}>登録</button>
-      </div>
-      <NavLink to="/nextweek" end>
-        来週の練習
-      </NavLink>
-    </main>
+        {/* 入力フォーム */}
+        <div>
+          <br />
+          ----------------------------------------
+          <br />
+          フォーム
+          <br />
+          <label>反省点</label>
+          <input
+            type="text"
+            onChange={onChangeReflection}
+            placeholder="反省点を入力..."
+          />
+          <button onClick={patchRef}>反省</button>
+          <label>次回の目標</label>
+          <input
+            type="text"
+            onChange={onChangeObjective}
+            placeholder="来週の目標を入力..."
+          />
+          <button onClick={postObj}>登録</button>
+        </div>
+        <NavLink to="/nextweek" end>
+          来週の練習
+        </NavLink>
+      </main>
     </>
   );
 };
