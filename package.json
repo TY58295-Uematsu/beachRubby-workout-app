@@ -6,7 +6,7 @@
     "test": "mocha --require test/setup.js",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "cd front && npm install && npm run build && rm -rf ../public && cp -r dist ../public && cd .. && npm install",
+    "build": "cd front && npm install && npm run build && rm -rf ../public && cp -r dist ../public && cd .. && npm install && npm run db:migrate && npm run db:seed",
     "db:init": "knex init",
     "db:migrate": "knex migrate:latest",
     "db:migrate-make": "knex migrate:make",
