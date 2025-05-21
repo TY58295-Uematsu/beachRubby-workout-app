@@ -11,6 +11,7 @@ const ThisWeek = () => {
     const [fetchData, setFetchData] = useState([]);
     const [fetchToggle, setFetchToggle] = useState(false);
     const [isDonePost, setIsDonePost] = useState(false);
+    const [nextWorkoutId, setNextWorkoutId] = useState(0);
     const { user} = useAuth();
 
   useEffect(() => {
@@ -61,30 +62,27 @@ const ThisWeek = () => {
         query.date = '0' + query.date;
       }
 
-      const url = `/api/thisweek?wtu.user_id=1&wo.workout_day=${query.year}-${query.month}-${query.date}`;
+      const url = `/api/thisweek?users.name=${user}&wo.workout_day=${query.year}-${query.month}-${query.date}`;
       fetch(url)
         .then((res) => res.json())
         .then((data) => setFetchData(data));
     }
   }, [thisSunday, fetchToggle]);
 
-  useEffect(() => {
-    if (fetchData.length) {
-      console.log('fetchData', fetchData);
-    }
-  }, [fetchData]);
 
-  //来週の目標書いてあるか確認
-  useEffect(() => {
-    console.log('ssss', fetchData);
+//来週の目標書いてあるか確認
+useEffect(() => {
+      console.log('fetchData', fetchData);
     if (fetchData.length) {
-      console.log('qqqq', fetchData);
-      const url = `api/nextweek?id=${fetchData[0].id}`;
+      const url = `api/nextweek?users.name=${user}&id=${fetchData[0].id}`;
       fetch(url)
         .then((res) => res.json())
         .then(({ data }) => {
-          if (data.length) {
+          console.log('来週のレコード',data);
+          
+          if (!!data) {
             setIsDonePost(true);
+            setNextWorkoutId(data.id)
             console.log('来週の目標はすでにあります');
           } else {
             setIsDonePost(false);
@@ -103,7 +101,7 @@ const ThisWeek = () => {
   };
 
   const patchUrl = async () => {
-    fetch('/api/thisweek/url', {
+    fetch(`/api/thisweek/url?users.name=${user}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -121,7 +119,7 @@ const ThisWeek = () => {
   };
 
   const patchRef = async () => {
-    fetch('/api/thisweek/ref', {
+    fetch(`/api/thisweek/ref?users.name=${user}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -137,13 +135,16 @@ const ThisWeek = () => {
 
   const postObj = async () => {
     if (isDonePost) {
-      fetch('/api/thisweek/ref', {
+      //すでに来週のレコードがあるので、パッチ
+      console.log("すでに来週のレコードがあるので、パッチ");
+      
+      fetch(`/api/thisweek/ref?users.name=${user}`, {
         headers: {
           'Content-Type': 'application/json',
         },
         method: 'PATCH',
         body: JSON.stringify({
-          id: fetchData[0].id + 1,
+          id: nextWorkoutId,
           objective: objective,
         }),
       })
@@ -153,7 +154,10 @@ const ThisWeek = () => {
       console.log(JSON.stringify({ youtube_url: youtubeUrl }));
       setFetchToggle(!fetchToggle);
     } else {
-      fetch('/api/nextweek/obj', {
+      //まだ来週のレコードがないので、ポスト
+      console.log("すまだ来週のレコードがないので、ポスト");
+
+      fetch(`/api/nextweek/obj?users.name=${user}`, {
         headers: {
           'Content-Type': 'application/json',
         },

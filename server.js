@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const express = require('express');
 const app = express();
 const db = require('./knex');
+const authCheck = require('./authCheck');
 
 function setUpServer() {
   // 認証系
@@ -68,15 +69,15 @@ function setUpServer() {
 
   app.use(express.json());
   app.use(express.static(path.join(__dirname, '/public')));
-  app.get('/api', async (req, res) => {
+  app.get('/api', async (req, res, next) => {
     const test = await sql();
     // console.log(test);
     res.send(test);
   });
 
   // ユーザー登録
-  app.post('/register', async (req, res) => {
-    console.log('register', req.body);
+  app.post('/register', async (req, res, next) => {
+    // console.log('register', req.body);
     const { userName, password } = req.body;
     const salt = crypto.randomBytes(6).toString('hex');
     const hashedPassword = hashPassword(password, salt);
@@ -89,9 +90,9 @@ function setUpServer() {
     res.status(201).json({ data: userName });
     // res.redirect('/');
   });
-//auth check
+  //auth check
   // ログイン
-  app.post('/login', async (req, res) => {
+  app.post('/login', async (req, res, next) => {
     const { userName, password } = req.body;
     const user = await db('users').where('name', userName).first();
     if (!user) return res.status(404).send('no data');
@@ -102,7 +103,7 @@ function setUpServer() {
     // ログインが成功したらセッションを手動で作成
     //セッション作る関数にDB操作も追加したい（sessionオブジェクト無くしたい）
     const sessionId = createSession(userName);
-    console.log(sessionId);
+    // console.log(sessionId);
     await db('users').where('name', user.name).update('session_id', sessionId);
     // httpOnly:true  JSからこのクッキーにアクセスできないようにする。（クロスサイトスクリプティングによるセッションID盗難のリスク低減）
     res.cookie('sessionId', sessionId, { httpOnly: true });
@@ -110,30 +111,46 @@ function setUpServer() {
   });
 
   // ログアウト
-  app.get('/logout', async(req, res) => {
-    console.log(req.query);
-    
-    const userName = req.query.user_name;
+  app.get('/logout', authCheck, async (req, res, next) => {
+
+    const userName = req.query['users.name'];
     const sessionId = req.cookies.sessionId;
     //dbから削除に変更
     // delete sessions[sessionId];
     await db('users').where('name', userName).update(`session_id`, null);
     res.clearCookie('sessionId');
     // res.redirect('/');
-    res.status(200).send('you logged out succesfully!')
+    res.status(200).send('you logged out succesfully!');
   });
 
-  // 今週の全データを渡す
-  app.get('/api/thisweek', async (req, res) => {
+  // 今週の全データを渡す。レコードがなければ作成する。
+  app.get('/api/thisweek', authCheck,async (req, res, next) => {
+
     const query = req.query;
-    const resObj = await sql(query);
+    // console.log('query', query);
+    let resObj = await sql(query);
+    if (resObj.length === 0) {
+      const user = await db('users')
+        .select('id')
+        .where('name', query['users.name'])
+        .first();
+      const workout = await db('workout')
+        .select('id')
+        .where('workout_day', query['wo.workout_day'])
+        .first();
+      await db('workout_to_users').insert({
+        user_id: user.id,
+        workout_id: workout.id,
+      });
+      resObj = await sql(query);
+    }
     res.status(200).json(resObj);
   });
 
   //   YutubeURL保存
-  app.patch('/api/thisweek/url', async (req, res) => {
+  app.patch('/api/thisweek/url', authCheck, async (req, res, next) => {
     const payload = req.body;
-    console.log('payload', payload);
+    // console.log('payload', payload);
     await db('workout')
       .where('id', payload.workout_id)
       .update({ youtube_url: payload.youtube_url });
@@ -142,7 +159,7 @@ function setUpServer() {
   });
 
   //振り返りと、次回のレコードすでに持っている場合、目標を更新する
-  app.patch('/api/thisweek/ref', async (req, res) => {
+  app.patch('/api/thisweek/ref', authCheck, async (req, res, next) => {
     const payload = req.body;
     if (payload.reflection) {
       await db('workout_to_users')
@@ -164,14 +181,18 @@ function setUpServer() {
   });
 
   //   次週の目標を保存しているか（次週のレコード持っているか）確認
-  app.get('/api/nextweek', async (req, res) => {
+  app.get('/api/nextweek', authCheck, async (req, res, next) => {
     const id = Number(req.query.id);
-    const nextSunday = await db('workout_to_users').where('id', '>', id);
+    const nextSunday = await db('workout_to_users')
+      .where('id', '>', id)
+      .first();
+    // console.log('nextSunday', nextSunday);
+
     res.status(200).json({ data: nextSunday });
   });
 
   //   ユーザーが次週のテーブルを持っていない時、目標と一緒に作成
-  app.post('/api/nextweek/obj', async (req, res) => {
+  app.post('/api/nextweek/obj', authCheck, async (req, res, next) => {
     const payload = req.body;
     await db('workout_to_users').insert(payload);
     const resObj = await db('workout_to_users').orderBy('id', 'desc').first();

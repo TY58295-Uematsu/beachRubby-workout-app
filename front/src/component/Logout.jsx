@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Logout = () => {
   let navigate = useNavigate();
-  const { logout, isLoading } = useAuth();
+  const { user,logout, isLoading } = useAuth();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -14,7 +14,7 @@ const Logout = () => {
 
   const onClichLogout = async () => {
     // const data =
-    await fetch(`/logout?user_name=${user}`);
+    await fetch(`/logout?users.name=${user}`);
     // .then((res) => res.json());
     //   .then((data) => console.log(data));
     // console.log(data);

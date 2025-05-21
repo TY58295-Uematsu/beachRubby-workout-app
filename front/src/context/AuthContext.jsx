@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
-  //これ必要
   useEffect(() => {
     const initializeAuth = () => {
       const storedUser = localStorage.getItem('user');
@@ -26,11 +25,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    // localStorage.setItem(' user', userData);
+    //   ブラウザをリロードした時にuser情報が保持できる
+    localStorage.setItem('user', userData);
   };
   const logout = () => {
     setUser(null);
-    // localStorage.removeItem(' user');
+    localStorage.removeItem('user');
   };
   if (isLoading) {
     return null;

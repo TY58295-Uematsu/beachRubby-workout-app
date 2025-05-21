@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router';
 import Header from '../../Header';
+import { useAuth } from '../../../context/AuthContext';
 
 const NextWeek = () => {
   const [nextSunday, setNextSunday] = useState('');
@@ -8,6 +9,7 @@ const NextWeek = () => {
   const [fetchToggle, setFetchToggle] = useState(false);
   const [temperature, setTemperature] = useState('');
   const [temperatureDate, setTemperatureDate] = useState('');
+  const { user } = useAuth();
 
   // 次回の練習の日付をとってきたい。
   useEffect(() => {
@@ -70,7 +72,7 @@ const NextWeek = () => {
         query.date = '0' + query.date;
       }
 
-      const url = `/api/thisweek?wtu.user_id=1&wo.workout_day=${query.year}-${query.month}-${query.date}`;
+      const url = `/api/thisweek?users.name=${user}&wo.workout_day=${query.year}-${query.month}-${query.date}`;
       fetch(url)
         .then((res) => res.json())
         .then((data) => setFetchData(data));
@@ -108,20 +110,20 @@ const NextWeek = () => {
 
   return (
     <>
-    <Header />
-    <div className="">
-      <h1>
-        次回練習日：
-        {`${nextSunday.year}年${nextSunday.month}月${nextSunday.date}`}
-      </h1>
-      {temperatureDate},{temperature}℃
-      <div>
-        次回の目標:<label>{fetchData[0]?.objective}</label>
+      <Header />
+      <div className="">
+        <h1>
+          次回練習日：
+          {`${nextSunday.year}年${nextSunday.month}月${nextSunday.date}`}
+        </h1>
+        {temperatureDate},{temperature}℃
+        <div>
+          次回の目標:<label>{fetchData[0]?.objective}</label>
+        </div>
+        <NavLink to="/thisweek" end>
+          今週の練習
+        </NavLink>
       </div>
-      <NavLink to="/thisweek" end>
-        今週の練習
-      </NavLink>
-    </div>
     </>
   );
 };

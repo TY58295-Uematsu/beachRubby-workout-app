@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import Header from '../../Header';
 import { useAuth } from '../../../context/AuthContext';
