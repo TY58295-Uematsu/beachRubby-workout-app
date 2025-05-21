@@ -3,6 +3,8 @@ import { NavLink } from 'react-router';
 import Header from '../../Header';
 import { useAuth } from '../../../context/AuthContext';
 
+import SunnyIcon from '@mui/icons-material/Sunny';
+
 const NextWeek = () => {
   const [nextSunday, setNextSunday] = useState('');
   const [fetchData, setFetchData] = useState([]);
@@ -112,11 +114,13 @@ const NextWeek = () => {
     <>
       <Header />
       <div className="">
-        <h1>
           次回練習日：
-          {`${nextSunday.year}年${nextSunday.month}月${nextSunday.date}`}
+        <h1>
+          {`${nextSunday.year}年${nextSunday.month}月${nextSunday.date}日`}
         </h1>
-        {temperatureDate},{temperature}℃
+        気温：{temperature}℃
+        <SunnyIcon/>
+
         <div>
           次回の目標:<label>{fetchData[0]?.objective}</label>
         </div>

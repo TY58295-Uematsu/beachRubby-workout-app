@@ -1,18 +1,18 @@
-import {  useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router';
 import Header from '../../Header';
 import { useAuth } from '../../../context/AuthContext';
 
 const ThisWeek = () => {
-    const [reflection, setReflection] = useState('');
-    const [youtubeUrl, setYoutubeUrl] = useState('');
-    const [objective, setObjective] = useState('');
-    const [thisSunday, setThisSunday] = useState({ year: 0, month: 0, date: 0 });
-    const [fetchData, setFetchData] = useState([]);
-    const [fetchToggle, setFetchToggle] = useState(false);
-    const [isDonePost, setIsDonePost] = useState(false);
-    const [nextWorkoutId, setNextWorkoutId] = useState(0);
-    const { user} = useAuth();
+  const [reflection, setReflection] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [objective, setObjective] = useState('');
+  const [thisSunday, setThisSunday] = useState({ year: 0, month: 0, date: 0 });
+  const [fetchData, setFetchData] = useState([]);
+  const [fetchToggle, setFetchToggle] = useState(false);
+  const [isDonePost, setIsDonePost] = useState(false);
+  const [nextWorkoutId, setNextWorkoutId] = useState(0);
+  const { user } = useAuth();
 
   useEffect(() => {
     console.log('THIsWeek.jsx');
@@ -69,20 +69,19 @@ const ThisWeek = () => {
     }
   }, [thisSunday, fetchToggle]);
 
-
-//来週の目標書いてあるか確認
-useEffect(() => {
-      console.log('fetchData', fetchData);
+  //来週の目標書いてあるか確認
+  useEffect(() => {
+    console.log('fetchData', fetchData);
     if (fetchData.length) {
       const url = `api/nextweek?users.name=${user}&id=${fetchData[0].id}`;
       fetch(url)
         .then((res) => res.json())
         .then(({ data }) => {
-          console.log('来週のレコード',data);
-          
+          console.log('来週のレコード', data);
+
           if (!!data) {
             setIsDonePost(true);
-            setNextWorkoutId(data.id)
+            setNextWorkoutId(data.id);
             console.log('来週の目標はすでにあります');
           } else {
             setIsDonePost(false);
@@ -136,8 +135,8 @@ useEffect(() => {
   const postObj = async () => {
     if (isDonePost) {
       //すでに来週のレコードがあるので、パッチ
-      console.log("すでに来週のレコードがあるので、パッチ");
-      
+      console.log('すでに来週のレコードがあるので、パッチ');
+
       fetch(`/api/thisweek/ref?users.name=${user}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +154,7 @@ useEffect(() => {
       setFetchToggle(!fetchToggle);
     } else {
       //まだ来週のレコードがないので、ポスト
-      console.log("すまだ来週のレコードがないので、ポスト");
+      console.log('すまだ来週のレコードがないので、ポスト');
 
       fetch(`/api/nextweek/obj?users.name=${user}`, {
         headers: {
@@ -186,21 +185,23 @@ useEffect(() => {
       {user}
       <main className="">
         {/* {console.log(thisSunday)} */}
+        前回の練習日
         <h1>
-          ThisWeek
-          {`${thisSunday.year}年${thisSunday.month}月${thisSunday.date}`}
+          {`${thisSunday.year}年${thisSunday.month}月${thisSunday.date}日`}
         </h1>
         <div>
           今回の目標:<label>{fetchData[0]?.objective}</label>
         </div>
         <div>
           {!!fetchData[0]?.youtube_url ? (
-            <a href={fetchData[0]?.youtube_url} target="_blank">
-              動画リンク
-            </a>
+            <div>
+              練習動画：
+              <a href={fetchData[0]?.youtube_url} target="_blank">
+                動画リンク
+              </a>
+            </div>
           ) : (
-            <>
-              {' '}
+            <div>
               <label>動画URL</label>
               <input
                 type="text"
@@ -209,14 +210,13 @@ useEffect(() => {
               />
               {youtubeUrl}
               <button onClick={patchUrl}>登録</button>
-            </>
+            </div>
           )}
         </div>
         <div>
           <label>反省点:</label>
           <span>{fetchData[0]?.reflection}</span>
         </div>
-
         {/* 入力フォーム */}
         <div>
           <br />

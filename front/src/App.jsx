@@ -8,14 +8,6 @@ import { BrowserRouter, createBrowserRouter, Route, RouterProvider, Routes } fro
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 
-// const useUser = () => {
-//   const [userGlobal, setUserGlobal] = useState('');
-//   return {
-//     userGlobal,
-//     setUserGlobal,
-//   };
-// };
-// export const UserContext = createContext();
 
 const router = createBrowserRouter([
   {
@@ -24,6 +16,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
+      { path: '*', element: <Home /> },
       {
         element: <ProtectedRoute />,
         children: [
@@ -38,21 +31,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      {/* <UserContext.Provider value={useUser()}> */}
-        {/* <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/nextweek" element={<NextWeek />} />
-            <Route path="/thisweek" element={<ThisWeek />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </BrowserRouter> */}
-
         <AuthProvider>
           <RouterProvider router={router} />
         </AuthProvider>
-      {/* </UserContext.Provider> */}
     </>
   );
 }
