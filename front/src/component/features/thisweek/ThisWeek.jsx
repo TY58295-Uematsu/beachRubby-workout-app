@@ -1,17 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { NavLink } from 'react-router';
 import Header from '../../Header';
-import { UserContext } from '../../../App';
+import { useAuth } from '../../../context/AuthContext';
 
 const ThisWeek = () => {
-  const [reflection, setReflection] = useState('');
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [objective, setObjective] = useState('');
-  const [thisSunday, setThisSunday] = useState({ year: 0, month: 0, date: 0 });
-  const [fetchData, setFetchData] = useState([]);
-  const [fetchToggle, setFetchToggle] = useState(false);
-  const [isDonePost, setIsDonePost] = useState(false);
-  const { userGlobal, setUserGlobal } = useContext(UserContext);
+    const [reflection, setReflection] = useState('');
+    const [youtubeUrl, setYoutubeUrl] = useState('');
+    const [objective, setObjective] = useState('');
+    const [thisSunday, setThisSunday] = useState({ year: 0, month: 0, date: 0 });
+    const [fetchData, setFetchData] = useState([]);
+    const [fetchToggle, setFetchToggle] = useState(false);
+    const [isDonePost, setIsDonePost] = useState(false);
+    const { user} = useAuth();
 
   useEffect(() => {
     console.log('THIsWeek.jsx');
@@ -179,7 +179,7 @@ const ThisWeek = () => {
   return (
     <>
       <Header />
-      {userGlobal}
+      {user}
       <main className="">
         {/* {console.log(thisSunday)} */}
         <h1>

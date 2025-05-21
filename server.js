@@ -26,8 +26,9 @@ function setUpServer() {
 
   function createSession(userName) {
     // ランダムなセッションIDを生成。（セッションハイジャック対策）
+    //時間でセッション切れるようにしたい
     const sessionId = crypto.randomBytes(16).toString('hex');
-    sessions[sessionId] = { userName, createdAt: Date.now() };
+    // sessions[sessionId] = { userName, createdAt: Date.now() };
     return sessionId;
   }
 
@@ -88,7 +89,7 @@ function setUpServer() {
     res.status(201).json({ data: userName });
     // res.redirect('/');
   });
-
+//auth check
   // ログイン
   app.post('/login', async (req, res) => {
     const { userName, password } = req.body;
@@ -115,7 +116,7 @@ function setUpServer() {
     const userName = req.query.user_name;
     const sessionId = req.cookies.sessionId;
     //dbから削除に変更
-    delete sessions[sessionId];
+    // delete sessions[sessionId];
     await db('users').where('name', userName).update(`session_id`, null);
     res.clearCookie('sessionId');
     // res.redirect('/');

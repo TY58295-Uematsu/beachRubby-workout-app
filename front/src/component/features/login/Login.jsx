@@ -1,13 +1,13 @@
 import { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import Header from '../../Header';
-import { UserContext } from '../../../App';
+import { useAuth } from '../../../context/AuthContext';
 
 const Login = () => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   let navigate = useNavigate();
-  const { userGlobal, setUserGlobal } = useContext(UserContext);
+  const { login, user, isLoading } = useAuth();
 
   const onChangeUserName = (e) => {
     setUserName(e.target.value);
@@ -32,16 +32,24 @@ const Login = () => {
       .then((res) => res.json())
       .then(({ data }) => {
         console.log(data);
-        setUserGlobal(data);
+        login(data);
       });
 
-    navigate('/thisweek');
+    // navigate('/thisweek');
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (user) {
+    return navigate('/thisweek');
+  }
 
   return (
     <>
       <Header />
-      {userGlobal}
+      {user}
       <div className="">
         <h1>ログイン</h1>
         <form>

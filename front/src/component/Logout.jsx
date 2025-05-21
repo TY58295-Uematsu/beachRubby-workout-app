@@ -1,18 +1,24 @@
-import { useContext } from 'react';
+// import { useContext } from 'react';
 import { useNavigate } from 'react-router';
-import { UserContext } from '../App';
+// import { UserContext } from '../App';
+import { useAuth } from '../context/AuthContext';
+
 
 const Logout = () => {
   let navigate = useNavigate();
-  const { userGlobal, setUserGlobal } = useContext(UserContext);
+  const { logout, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const onClichLogout = async () => {
     // const data =
-    await fetch(`/logout?user_name=${userGlobal}`);
+    await fetch(`/logout?user_name=${user}`);
     // .then((res) => res.json());
     //   .then((data) => console.log(data));
     // console.log(data);
-    setUserGlobal('')
+    logout();
     navigate('/login');
   };
 
