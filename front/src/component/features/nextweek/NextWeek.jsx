@@ -172,7 +172,7 @@ const NextWeek = () => {
 
             {/* 持ち物グリッド */}
             <Grid item xs={12} sm={6}> {/* スマホでは縦並び(xs=12)、タブレット以上で横並び(sm=6) */}
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}> {/* 高さ100%にして、アイコンとテキストを均等に配置 */}
+              <Card sx={{  width:'400px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}> {/* 高さ100%にして、アイコンとテキストを均等に配置 */}
                 <CardContent>
                   <Typography variant="h6" component="h2" gutterBottom>
                     持ち物:
