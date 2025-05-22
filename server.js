@@ -7,6 +7,7 @@ const app = express();
 const db = require('./knex');
 const authCheck = require('./authCheck');
 const geminiRouter = require('./routes/gemini');
+const { log } = require('console');
 
 function setUpServer() {
     app.use(express.json());
@@ -78,14 +79,14 @@ function setUpServer() {
   };
 
 
-  app.get('/api', async (req, res, next) => {
+  app.get('/api', async (req, res) => {
     const test = await sql();
     // console.log(test);
     res.send(test);
   });
 
   // ユーザー登録
-  app.post('/register', async (req, res, next) => {
+  app.post('/register', async (req, res) => {
     console.log('register', req.body);
     const { userName, password } = req.body;
     const salt = crypto.randomBytes(6).toString('hex');
@@ -99,7 +100,7 @@ function setUpServer() {
     // res.redirect('/');
   });
 
-  app.post('/login', async (req, res, next) => {
+  app.post('/login', async (req, res) => {
     console.log('login', req.body);
 
     const { userName, password } = req.body;
@@ -125,7 +126,7 @@ function setUpServer() {
   });
 
   // ログアウト
-  app.get('/logout', authCheck, async (req, res, next) => {
+  app.get('/logout', authCheck, async (req, res) => {
     const userName = req.query['users.name'];
     const sessionId = req.cookies.sessionId;
     //dbから削除に変更
@@ -137,7 +138,7 @@ function setUpServer() {
   });
 
   // 今週の全データを渡す。レコードがなければ作成する。
-  app.get('/api/thisweek', authCheck, async (req, res, next) => {
+  app.get('/api/thisweek', authCheck, async (req, res) => {
     const query = req.query;
     // console.log('query', query);
     let resObj = await sql(query);
@@ -160,7 +161,7 @@ function setUpServer() {
   });
 
   //   YutubeURL保存
-  app.patch('/api/thisweek/url', authCheck, async (req, res, next) => {
+  app.patch('/api/thisweek/url', authCheck, async (req, res) => {
     const payload = req.body;
     // console.log('payload', payload);
     await db('workout')
@@ -170,8 +171,8 @@ function setUpServer() {
     res.status(201).json({ data: resObj });
   });
 
-  //振り返りと、次回のレコードすでに持っている場合、目標を更新する
-  app.patch('/api/thisweek/ref', authCheck, async (req, res, next) => {
+  //振り返りを更新する
+  app.patch('/api/thisweek/ref', authCheck, async (req, res) => {
     const payload = req.body;
     if (payload.reflection) {
       await db('workout_to_users')
@@ -191,12 +192,29 @@ function setUpServer() {
       return res.status(201).json({ data: resObj });
     }
   });
+  //次回のレコードすでに持っている場合、目標を更新する
+  app.patch('/api/thisweek/obj', authCheck, async (req, res) => {
+    const payload = req.body;
+      await db('workout_to_users')
+        .where('id', payload.id)
+        .update({ objective: payload.objective });
+      const resObj = await db('workout_to_users')
+        .where('id', payload.id)
+        .first();
+      return res.status(201).json({ data: resObj });
+    
+  });
 
   //   次週の目標を保存しているか（次週のレコード持っているか）確認
-  app.get('/api/nextweek', authCheck, async (req, res, next) => {
+  app.get('/api/nextweek', authCheck, async (req, res) => {
     const id = Number(req.query.id);
+    const userName = (req.query['users.name']);
+    const {id:userId} = await db('users').where('name', userName).first();
+    console.log();
+    
     const nextSunday = await db('workout_to_users')
       .where('id', '>', id)
+      .andWhere('user_id',Number(userId) )
       .first();
     // console.log('nextSunday', nextSunday);
 
@@ -204,7 +222,7 @@ function setUpServer() {
   });
 
   //   ユーザーが次週のテーブルを持っていない時、目標と一緒に作成
-  app.post('/api/nextweek/obj', authCheck, async (req, res, next) => {
+  app.post('/api/nextweek/obj', authCheck, async (req, res) => {
     const payload = req.body;
     await db('workout_to_users').insert(payload);
     const resObj = await db('workout_to_users').orderBy('id', 'desc').first();
