@@ -10,20 +10,17 @@ const geminiRouter = require('./routes/gemini');
 const { log } = require('console');
 
 function setUpServer() {
-    app.use(express.json());
+  app.use(express.json());
   // 認証系
   // form からのリクエストを受けるために必要
   app.use(express.urlencoded({ extended: true }));
 
   // express でcookieを取得
   app.use(cookieParser());
-//   app.use(cors({
-//     origin: 'http://localhost:5173', //Reactアプリが動いているオリジン
-//     credentials: true // クッキーの送受信を許可する
-//   }));
   app.use(express.static('public'));
-//   app.use(express.static(path.join(__dirname, '/public')));
-
+  if (process.env.ISTEST !== 'test_no_auth') {
+    app.use(authCheck);
+  }
   app.use('/api/gemini', geminiRouter);
 
   const sessions = {};
@@ -78,7 +75,6 @@ function setUpServer() {
     return result;
   };
 
-
   app.get('/api', async (req, res) => {
     const test = await sql();
     // console.log(test);
@@ -96,7 +92,7 @@ function setUpServer() {
       password: hashedPassword,
       salt: salt,
     });
-    res.status(201).json({ data: userName, redirectTo: '/login'  });
+    res.status(201).json({ data: userName, redirectTo: '/login' });
     // res.redirect('/');
   });
 
@@ -118,15 +114,15 @@ function setUpServer() {
     await db('users').where('name', user.name).update('session_id', sessionId);
     // httpOnly:true  JSからこのクッキーにアクセスできないようにする。（クロスサイトスクリプティングによるセッションID盗難のリスク低減）
     res.cookie('sessionId', sessionId, {
-      httpOnly: true, 
-      secure: false, 
+      httpOnly: true,
+      secure: false,
       sameSite: 'Lax', // クロスサイトリクエスト時のクッキー送信を制御。
     });
     res.status(200).json({ data: userName, redirectTo: '/thisweek' });
   });
 
   // ログアウト
-  app.get('/logout', authCheck, async (req, res) => {
+  app.get('/logout', async (req, res) => {
     const userName = req.query['users.name'];
     const sessionId = req.cookies.sessionId;
     //dbから削除に変更
@@ -138,7 +134,7 @@ function setUpServer() {
   });
 
   // 今週の全データを渡す。レコードがなければ作成する。
-  app.get('/api/thisweek', authCheck, async (req, res) => {
+  app.get('/api/thisweek', async (req, res) => {
     const query = req.query;
     // console.log('query', query);
     let resObj = await sql(query);
@@ -161,7 +157,7 @@ function setUpServer() {
   });
 
   //   YutubeURL保存
-  app.patch('/api/thisweek/url', authCheck, async (req, res) => {
+  app.patch('/api/thisweek/url', async (req, res) => {
     const payload = req.body;
     // console.log('payload', payload);
     await db('workout')
@@ -172,7 +168,7 @@ function setUpServer() {
   });
 
   //振り返りを更新する
-  app.patch('/api/thisweek/ref', authCheck, async (req, res) => {
+  app.patch('/api/thisweek/ref', async (req, res) => {
     const payload = req.body;
     if (payload.reflection) {
       await db('workout_to_users')
@@ -193,28 +189,25 @@ function setUpServer() {
     }
   });
   //次回のレコードすでに持っている場合、目標を更新する
-  app.patch('/api/thisweek/obj', authCheck, async (req, res) => {
+  app.patch('/api/thisweek/obj', async (req, res) => {
     const payload = req.body;
-      await db('workout_to_users')
-        .where('id', payload.id)
-        .update({ objective: payload.objective });
-      const resObj = await db('workout_to_users')
-        .where('id', payload.id)
-        .first();
-      return res.status(201).json({ data: resObj });
-    
+    await db('workout_to_users')
+      .where('id', payload.id)
+      .update({ objective: payload.objective });
+    const resObj = await db('workout_to_users').where('id', payload.id).first();
+    return res.status(201).json({ data: resObj });
   });
 
   //   次週の目標を保存しているか（次週のレコード持っているか）確認
-  app.get('/api/nextweek', authCheck, async (req, res) => {
+  app.get('/api/nextweek', async (req, res) => {
     const id = Number(req.query.id);
-    const userName = (req.query['users.name']);
-    const {id:userId} = await db('users').where('name', userName).first();
+    const userName = req.query['users.name'];
+    const { id: userId } = await db('users').where('name', userName).first();
     console.log();
-    
+
     const nextSunday = await db('workout_to_users')
       .where('id', '>', id)
-      .andWhere('user_id',Number(userId) )
+      .andWhere('user_id', Number(userId))
       .first();
     // console.log('nextSunday', nextSunday);
 
@@ -222,7 +215,7 @@ function setUpServer() {
   });
 
   //   ユーザーが次週のテーブルを持っていない時、目標と一緒に作成
-  app.post('/api/nextweek/obj', authCheck, async (req, res) => {
+  app.post('/api/nextweek/obj', async (req, res) => {
     const payload = req.body;
     await db('workout_to_users').insert(payload);
     const resObj = await db('workout_to_users').orderBy('id', 'desc').first();
@@ -230,15 +223,15 @@ function setUpServer() {
   });
 
   //チームメイトのやつも含めて全部取ってくる
-  app.get('/api/workout', authCheck,async(req, res) => {
+  app.get('/api/workout', async (req, res) => {
     const payload = req.query;
     console.log(payload);
-    
+
     //'wo.workout_day'
-    const resArray = await sql({ 'wo.workout_day': payload['wo.workout_day'] })
+    const resArray = await sql({ 'wo.workout_day': payload['wo.workout_day'] });
     // const resArray = await sql(payload)
-    res.status(200).json({data:resArray});
-  })
+    res.status(200).json({ data: resArray });
+  });
   return app;
 }
 

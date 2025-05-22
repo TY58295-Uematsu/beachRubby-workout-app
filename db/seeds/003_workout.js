@@ -7,8 +7,8 @@ const initialValue = require('./../fixtures')
  */
 exports.seed = async function(knex) {
   // Deletes ALL existing entries
-  console.log('003seedstart');
-  console.log(initialValue);
+  // console.log('003seedstart');
+  // console.log(initialValue);
   await knex('workout').del()
   await knex('workout').insert(initialValue);
   console.log('003seedend');
