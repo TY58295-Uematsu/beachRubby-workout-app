@@ -1,8 +1,7 @@
 import { NavLink, useNavigate } from 'react-router';
 import Header from '../../Header';
 import { useAuth } from '../../../context/AuthContext';
-//====================================================================
-import * as React from 'react';
+import {useState}  from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,9 +12,12 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-// import ForgotPassword from './components/ForgotPassword';
 import ColorModeSelect from './../../../theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './../../../icons';
+import backgroundImage from './../../../assets/register.jpg';
+import logo from './../../../assets/logo.jpg';
+
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -58,16 +60,15 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
     }),
   },
 }));
-//========================================================================================================
 
 const Login = () => {
 
   let navigate = useNavigate();
   const { login } = useAuth();
-  const [userNameError, setUserNameError] = React.useState(false);
-  const [userNameErrorMessage, setUserNameErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const [userNameError, setUserNameError] = useState(false);
+  const [userNameErrorMessage, setUserNameErrorMessage] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +76,6 @@ const Login = () => {
       e.preventDefault();
       return;
     }
-    // const data = new FormData(e.currentTarget);
     const userName = document.getElementById('userName');
     const password = document.getElementById('password');
 
@@ -120,7 +120,6 @@ const Login = () => {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 4 characters long.');
       isValid = false;
-      //   return
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
@@ -131,20 +130,41 @@ const Login = () => {
   return (
     <>
       <Header />
-
+      <Box
+        sx={{
+          backgroundImage: `url(${backgroundImage})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
+          minHeight: '100vh', 
+          display: 'flex',
+          flexDirection: 'column',
+          color: 'white', 
+          position: 'relative', 
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.2)', 
+            zIndex: 1, 
+          }}
+        />
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
         />
-        <Card variant="outlined">
-          <SitemarkIcon />
+        <Card variant="outlined" sx={{zIndex:2}}>
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' ,mt:'40px'}}
           >
-            Sign in
+            ログイン
           </Typography>
           <Box
             component="form"
@@ -166,7 +186,6 @@ const Login = () => {
                 type="text"
                 name="userName"
                 placeholder="ユーザー名を入力してください"
-                // autoComplete="userName"
                 autoFocus
                 required
                 fullWidth
@@ -227,6 +246,19 @@ const Login = () => {
           </Box>
         </Card>
       </SignInContainer>
+      </Box>
+      <Box
+        sx={{
+          backgroundImage: `url(${logo})`, 
+          backgroundSize: 'cover', // 画像をコンテナ全体に拡大縮小して表示
+          width: '160px',
+          height: '35px',
+          position: 'absolute', 
+          top: 195, 
+          left: 905, 
+          zIndex: 100, 
+        }}
+      />
     </>
   );
 };

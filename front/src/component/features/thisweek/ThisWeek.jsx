@@ -13,6 +13,8 @@ import {
   CardContent,
   Link as MuiLink, // Material-UIのLinkコンポーネントとreact-routerのLinkの衝突を避ける
 } from '@mui/material';
+import backgroundImage from './../../../assets/workout.jpg';
+
 
 const ThisWeek = () => {
   const [reflection, setReflection] = useState('');
@@ -20,6 +22,8 @@ const ThisWeek = () => {
   const [objective, setObjective] = useState('');
   const [thisSunday, setThisSunday] = useState({ year: 0, month: 0, date: 0 });
   const [fetchData, setFetchData] = useState([]);
+  const [fetchAllData, setFetchALLData] = useState([]);
+  const [otherPlayerData, setOtherPlayerData] = useState([]);
   const [fetchToggle, setFetchToggle] = useState(false);
   const [isDonePost, setIsDonePost] = useState(false);
   const [nextWorkoutId, setNextWorkoutId] = useState(0);
@@ -73,16 +77,26 @@ const ThisWeek = () => {
         query.date = '0' + query.date;
       }
 
-      const url = `/api/thisweek?users.name=${user}&wo.workout_day=${query.year}-${query.month}-${query.date}`;
+      let url = `/api/thisweek?users.name=${user}&wo.workout_day=${query.year}-${query.month}-${query.date}`;
       fetch(url)
         .then((res) => res.json())
         .then((data) => setFetchData(data));
+
+      url = `/api/workout?users.name=${user}&wo.workout_day=${query.year}-${query.month}-${query.date}`;
+      fetch(url)
+        .then((res) => res.json())
+        .then(({ data }) => {
+          console.log(data);
+
+          setFetchALLData(data);
+        });
     }
   }, [thisSunday, fetchToggle]);
 
   //来週の目標書いてあるか確認
   useEffect(() => {
     console.log('fetchData', fetchData);
+
     if (fetchData.length) {
       const url = `api/nextweek?users.name=${user}&id=${fetchData[0].id}`;
       fetch(url)
@@ -101,6 +115,15 @@ const ThisWeek = () => {
         });
     }
   }, [fetchData, fetchToggle]);
+
+  useEffect(() => {
+    console.log('fetchALLData', fetchAllData);
+    if (fetchAllData.length !== 0) {
+      setOtherPlayerData(
+        [...fetchAllData].filter((data) => data.name !== user)
+      );
+    }
+  }, [fetchAllData]);
 
   const onChangeReflection = (e) => {
     setReflection(e.target.value);
@@ -164,9 +187,6 @@ const ThisWeek = () => {
       console.log(JSON.stringify({ youtube_url: youtubeUrl }));
       setFetchToggle(!fetchToggle);
     } else {
-      //まだ来週のレコードがないので、ポスト
-      console.log('すまだ来週のレコードがないので、ポスト');
-
       fetch(`/api/nextweek/obj?users.name=${user}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -194,19 +214,40 @@ const ThisWeek = () => {
     <>
       <Header />
 
-      <Container maxWidth="md" sx={{ mt: 4, py: 2 }}>
-        <Grid container spacing={3}> 
-          {/* 左側の情報表示エリア */}
-          <Grid item xs={12} md={6}> {/* ここを md={6} に修正 */}
+            <Box
+              sx={{
+                backgroundImage: `url(${backgroundImage})`, 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center', 
+                minHeight: '100vh', 
+                display: 'flex',
+                flexDirection: 'column',
+                color: 'white', 
+                position: 'relative',
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0)', 
+                  zIndex: 1, 
+                }}
+              />
+      <Container maxWidth="md" sx={{ mt: 4, py: 2 ,zIndex: 2}}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
             <Grid container spacing={3} direction="column">
               <Grid item>
                 <Typography variant="h6" component="h2" gutterBottom>
-                  前回の練習日
+                  前回の練習日 :
                 </Typography>
                 <Typography
                   variant="h4"
                   component="h1"
-                  color="primary"
                   gutterBottom
                 >
                   {`${thisSunday.year}年${thisSunday.month + 1}月${
@@ -218,16 +259,35 @@ const ThisWeek = () => {
               <Grid item>
                 <Card sx={{ p: 2 }}>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      今回の目標:
-                      <Typography
-                        component="span"
-                        variant="body1"
-                        sx={{ ml: 1, fontWeight: 'bold' }}
-                      >
-                        {fetchData[0]?.objective || '目標が設定されていません'}
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        今回の目標 :
+                        <Typography
+                          component="span"
+                          variant="body1"
+                          color="primary"
+                          sx={{ ml: 1, fontWeight: 'bold' }}
+                        >
+                          {fetchData[0]?.objective ||
+                            '目標が設定されていません'}
+                        </Typography>
                       </Typography>
-                    </Typography>
+                    </Box>
+                    チームメイト
+                    <Box>
+                      {otherPlayerData.length !== 0 &&
+                        otherPlayerData.map((data) => (
+                          <Box>
+                            <Typography
+                              component="span"
+                              variant="body1"
+                              sx={{ ml: 1, fontWeight: 'bold' }}
+                            >
+                              {`${data.name} : ${data.objective||`入力なし`}`}
+                            </Typography>
+                          </Box>
+                        ))}
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>
@@ -286,16 +346,34 @@ const ThisWeek = () => {
               <Grid item>
                 <Card sx={{ p: 2 }}>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      反省点:
-                      <Typography
-                        component="span"
-                        variant="body1"
-                        sx={{ ml: 1, fontWeight: 'bold' }}
-                      >
-                        {fetchData[0]?.reflection ||
-                          '反省点が入力されていません'}
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        反省点 :
+                        <Typography
+                          component="span"
+                          variant="body1"
+                          color="primary"
+                          sx={{ ml: 1, fontWeight: 'bold' }}
+                        >
+                          {fetchData[0]?.reflection ||
+                            '反省点が入力されていません'}
+                        </Typography>
                       </Typography>
+                    </Box>
+                    チームメイト
+                    <Typography>
+                      {otherPlayerData.length !== 0 &&
+                        otherPlayerData.map((data) => (
+                          <Box>
+                            <Typography
+                              component="span"
+                              variant="body1"
+                              sx={{ ml: 1, fontWeight: 'bold' }}
+                            >
+                              {`${data.name} : '${data.reflection||'入力なし'}`}
+                            </Typography>
+                          </Box>
+                        ))}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -304,15 +382,16 @@ const ThisWeek = () => {
           </Grid>
 
           {/* 右側のフォームエリア */}
-          <Grid item xs={12} md={6}> {/* ここを md={6} に修正 */}
+          <Grid item xs={12} md={6}>
+            {' '}
             <Box sx={{ p: 2 }}>
-              <Typography variant="h6" component="h3" gutterBottom>
-                フォーム
-              </Typography>
-              <Card sx={{ p: 2 }}>
+              <Card sx={{ p: 2, mt:13 }}>
                 <CardContent>
                   <Grid container spacing={3} direction="column">
                     <Grid item>
+              <Typography variant="h6" component="h3" gutterBottom>
+                Form :
+              </Typography>
                       <Typography variant="subtitle1" gutterBottom>
                         反省点
                       </Typography>
@@ -356,7 +435,6 @@ const ThisWeek = () => {
                         目標を登録
                       </Button>
                     </Grid>
-                    {/* 来週の練習へのボタンはフォームグリッド内にあります */}
                     <Grid item xs={12} sx={{ mt: 3, textAlign: 'center' }}>
                       <Button
                         variant="outlined"
@@ -373,71 +451,9 @@ const ThisWeek = () => {
           </Grid>
         </Grid>
       </Container>
+      </Box>
     </>
   );
 };
 
 export default ThisWeek;
-
-{
-  /* <main className="">
-{/* {console.log(thisSunday)} */
-}
-// 前回の練習日
-// <h1>
-//   {`${thisSunday.year}年${thisSunday.month}月${thisSunday.date}日`}
-// </h1>
-// <div>
-//   今回の目標:<label>{fetchData[0]?.objective}</label>
-// </div>
-// <div>
-//   {!!fetchData[0]?.youtube_url ? (
-//     <div>
-//       練習動画：
-//       <a href={fetchData[0]?.youtube_url} target="_blank">
-//         動画リンク
-//       </a>
-//     </div>
-//   ) : (
-//     <div>
-//       <label>動画URL</label>
-//       <input
-//         type="text"
-//         onChange={onChangeUrl}
-//         placeholder="URLを入力..."
-//       />
-//       {youtubeUrl}
-//       <button onClick={patchUrl}>登録</button>
-//     </div>
-//   )}
-// </div>
-// <div>
-//   <label>反省点:</label>
-//   <span>{fetchData[0]?.reflection}</span>
-// </div>
-// {/* 入力フォーム */}
-// <div>
-//   <br />
-//   ----------------------------------------
-//   <br />
-//   フォーム
-//   <br />
-//   <label>反省点</label>
-//   <input
-//     type="text"
-//     onChange={onChangeReflection}
-//     placeholder="反省点を入力..."
-//   />
-//   <button onClick={patchRef}>反省</button>
-//   <label>次回の目標</label>
-//   <input
-//     type="text"
-//     onChange={onChangeObjective}
-//     placeholder="来週の目標を入力..."
-//   />
-//   <button onClick={postObj}>登録</button>
-// </div>
-// <NavLink to="/nextweek" end>
-//   来週の練習
-// </NavLink>
-// </main> */}
