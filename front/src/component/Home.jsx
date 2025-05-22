@@ -1,7 +1,9 @@
 import './../App.css';
 import { useEffect, useState } from 'react';
-import { NavLink } from "react-router";
+import { NavLink } from 'react-router';
 import Header from './/Header';
+import { Alert } from '@mui/material';
+import { CheckCircleOutline } from '@mui/icons-material';
 
 const Home = () => {
   const [message, setMessage] = useState();
@@ -14,18 +16,19 @@ const Home = () => {
   return (
     <>
       <Header />
+
       ----------------------------------------------------------------------
       <nav>
-        <NavLink to='/thisweek' end>
+        <NavLink to="/thisweek" end>
           今週の練習
         </NavLink>
-        <NavLink to='/nextweek' end>
+        <NavLink to="/nextweek" end>
           来週の練習
         </NavLink>
-        <NavLink to='/login' end>
+        <NavLink to="/login" end>
           ログイン
         </NavLink>
-        <NavLink to='/register' end>
+        <NavLink to="/register" end>
           新規登録
         </NavLink>
       </nav>

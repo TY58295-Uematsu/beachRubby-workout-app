@@ -4,6 +4,9 @@ import Header from '../../Header';
 import { useAuth } from '../../../context/AuthContext';
 
 import SunnyIcon from '@mui/icons-material/Sunny';
+import LocalDrinkIcon from '@mui/icons-material/LocalDrink';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import { Box, Card, CardContent, Container, Grid, Typography } from '@mui/material';
 
 const NextWeek = () => {
   const [nextSunday, setNextSunday] = useState('');
@@ -113,7 +116,7 @@ const NextWeek = () => {
   return (
     <>
       <Header />
-      <div className="">
+      {/* <div className="">
           次回練習日：
         <h1>
           {`${nextSunday.year}年${nextSunday.month}月${nextSunday.date}日`}
@@ -127,7 +130,82 @@ const NextWeek = () => {
         <NavLink to="/thisweek" end>
           今週の練習
         </NavLink>
-      </div>
+      </div> */}
+      <Container maxWidth="md"  sx={{ mt: 4, py: 2 }}>
+      <Grid container spacing={3} direction="column"> {/* 親のGridは縦並び */}
+
+        {/* 次回の練習日（上部の単一項目） */}
+        <Grid item xs={12}> {/* md={12} は省略可能。xs={12} で常に全幅 */}
+          <Typography variant="h6" component="h2" gutterBottom>
+            次回の練習日
+          </Typography>
+          <Typography
+            variant="h4"
+            component="h1"
+            color="primary"
+            gutterBottom
+          >
+            {`${nextSunday.year}年${nextSunday.month + 1}月${
+              nextSunday.date
+            }日`}
+          </Typography>
+        </Grid>
+
+        {/* 気温グリッドと持ち物グリッドを横並びにするための新しいGrid container */}
+        <Grid item xs={12}> {/* このGrid itemは、中の横並び要素をまとめる役割 */}
+          <Grid container spacing={2} alignItems="stretch" > {/* ★★ ここがポイント ★★ */}
+            {/* 気温グリッド */}
+            <Grid item xs={12} sm={6}> {/* スマホでは縦並び(xs=12)、タブレット以上で横並び(sm=6) */}
+              <Card sx={{ width:'400px',height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}> {/* 高さ100%にして、アイコンとテキストを均等に配置 */}
+                <CardContent>
+                  <Typography variant="h6" component="h2" gutterBottom>
+                    気温：{temperature}℃
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}> {/* アイコンを中央寄せ */}
+                    <SunnyIcon
+                      sx={{ fontSize: 100, color: '#D34C2C' }} // height/widthよりfontSize推奨
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* 持ち物グリッド */}
+            <Grid item xs={12} sm={6}> {/* スマホでは縦並び(xs=12)、タブレット以上で横並び(sm=6) */}
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}> {/* 高さ100%にして、アイコンとテキストを均等に配置 */}
+                <CardContent>
+                  <Typography variant="h6" component="h2" gutterBottom>
+                    持ち物:
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, my: 2 }}> {/* 複数のアイコンを横並び中央寄せ */}
+                    <LocalDrinkIcon
+                      sx={{ fontSize: 100, color: '#1E88E5' }}
+                    />
+                    <LocalDrinkIcon
+                      sx={{ fontSize: 100, color: '#1E88E5' }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* 次回の目標（下部の単一項目） */}
+        <Grid item xs={12}>
+          <Card sx={{ p: 2 }}>
+            <CardContent>
+              <Typography variant="h6" component="h2" gutterBottom>
+                次回の目標 :
+              </Typography>
+              <Typography variant="h6" component="h2" gutterBottom>
+                {fetchData[0]?.objective}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
     </>
   );
 };

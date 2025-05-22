@@ -2,22 +2,28 @@ const path = require('path');
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const db = require('./knex');
 const authCheck = require('./authCheck');
-const geminiRouter = require('./routes/gemini')
+const geminiRouter = require('./routes/gemini');
 
 function setUpServer() {
+    app.use(express.json());
   // 認証系
   // form からのリクエストを受けるために必要
   app.use(express.urlencoded({ extended: true }));
 
   // express でcookieを取得
   app.use(cookieParser());
+//   app.use(cors({
+//     origin: 'http://localhost:5173', //Reactアプリが動いているオリジン
+//     credentials: true // クッキーの送受信を許可する
+//   }));
   app.use(express.static('public'));
-  app.use(express.json());
+//   app.use(express.static(path.join(__dirname, '/public')));
 
-  app.use('/api/gemini', geminiRouter)
+  app.use('/api/gemini', geminiRouter);
 
   const sessions = {};
 
@@ -71,7 +77,7 @@ function setUpServer() {
     return result;
   };
 
-  app.use(express.static(path.join(__dirname, '/public')));
+
   app.get('/api', async (req, res, next) => {
     const test = await sql();
     // console.log(test);
@@ -80,7 +86,7 @@ function setUpServer() {
 
   // ユーザー登録
   app.post('/register', async (req, res, next) => {
-    // console.log('register', req.body);
+    console.log('register', req.body);
     const { userName, password } = req.body;
     const salt = crypto.randomBytes(6).toString('hex');
     const hashedPassword = hashPassword(password, salt);
@@ -89,33 +95,37 @@ function setUpServer() {
       password: hashedPassword,
       salt: salt,
     });
-    // users.push({ userName, salt, hashedPassword });
-    res.status(201).json({ data: userName });
+    res.status(201).json({ data: userName, redirectTo: '/login'  });
     // res.redirect('/');
   });
-  //auth check
-  // ログイン
+
   app.post('/login', async (req, res, next) => {
+    console.log('login', req.body);
+
     const { userName, password } = req.body;
     const user = await db('users').where('name', userName).first();
     if (!user) return res.status(404).send('no data');
     const inputHash = hashPassword(password, user.salt);
     if (inputHash !== user.password) {
+      console.log('ハッシュ値称号失敗');
       return res.status(404).send('no data');
     }
     // ログインが成功したらセッションを手動で作成
     //セッション作る関数にDB操作も追加したい（sessionオブジェクト無くしたい）
     const sessionId = createSession(userName);
-    // console.log(sessionId);
+    console.log('ログイン時に生成されたsessionId', sessionId);
     await db('users').where('name', user.name).update('session_id', sessionId);
     // httpOnly:true  JSからこのクッキーにアクセスできないようにする。（クロスサイトスクリプティングによるセッションID盗難のリスク低減）
-    res.cookie('sessionId', sessionId, { httpOnly: true });
-    res.status(200).json({ data: userName });
+    res.cookie('sessionId', sessionId, {
+      httpOnly: true, 
+      secure: false, 
+      sameSite: 'Lax', // クロスサイトリクエスト時のクッキー送信を制御。
+    });
+    res.status(200).json({ data: userName, redirectTo: '/thisweek' });
   });
 
   // ログアウト
   app.get('/logout', authCheck, async (req, res, next) => {
-
     const userName = req.query['users.name'];
     const sessionId = req.cookies.sessionId;
     //dbから削除に変更
@@ -127,8 +137,7 @@ function setUpServer() {
   });
 
   // 今週の全データを渡す。レコードがなければ作成する。
-  app.get('/api/thisweek', authCheck,async (req, res, next) => {
-
+  app.get('/api/thisweek', authCheck, async (req, res, next) => {
     const query = req.query;
     // console.log('query', query);
     let resObj = await sql(query);

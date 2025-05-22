@@ -14,13 +14,21 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
 import Logout from './Logout';
+import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import { Alert, Snackbar } from '@mui/material';
 
-const pages = ['前回の練習', '次の練習', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['今週の練習', '来週の練習', 'Blog'];
+const pass = ['/thisweek', '/nextweek', '/Blog'];
+const settings = ['Logout'];
 
 const Header = () => {
+  let navigate = useNavigate();
+  const { user, logout, isLoading } = useAuth();
+
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -29,18 +37,29 @@ const Header = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (i) => {
     setAnchorElNav(null);
+    navigate(pass[i]);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = async () => {
     setAnchorElUser(null);
+    await fetch(`/logout?users.name=${user}`);
+    logout();
+    setOpenSnackbar(true);
+    navigate('/login');
+  };
+
+  // Snackbarを閉じる関数
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   return (
     <>
-      <Logout />
-
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
@@ -48,8 +67,6 @@ const Header = () => {
             <Typography
               variant="h6"
               noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
@@ -60,9 +77,12 @@ const Header = () => {
                 textDecoration: 'none',
               }}
             >
-              Long Vacation with Bagus
+              <Link to="/" end>
+                LongVacationwithBugth
+              </Link>
             </Typography>
 
+            {/* レスポンシブ（スマホ） */}
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
@@ -101,8 +121,6 @@ const Header = () => {
             <Typography
               variant="h5"
               noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
               sx={{
                 mr: 2,
                 display: { xs: 'flex', md: 'none' },
@@ -114,13 +132,17 @@ const Header = () => {
                 textDecoration: 'none',
               }}
             >
-              LOGO
+              <Link to="/" end>
+                LongVacationwithBugth
+              </Link>
             </Typography>
+
+            {/* レスポンシブ（デスクトップ） */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {pages.map((page) => (
+              {pages.map((page, i) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => handleCloseNavMenu(i)}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   {page}
@@ -130,7 +152,7 @@ const Header = () => {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="Remy Sharp" src="src/assets/face.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -149,18 +171,30 @@ const Header = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: 'center' }}>
-                      {setting}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                {/* {settings.map((setting) => ( */}
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                </MenuItem>
+                {/* ))} */}
               </Menu>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          正常にログアウトしました！
+        </Alert>
+      </Snackbar>
     </>
   );
 };

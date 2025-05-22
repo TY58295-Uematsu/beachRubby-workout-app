@@ -15,9 +15,6 @@ const Logout = () => {
   const onClichLogout = async () => {
     // const data =
     await fetch(`/logout?users.name=${user}`);
-    // .then((res) => res.json());
-    //   .then((data) => console.log(data));
-    // console.log(data);
     logout();
     navigate('/login');
   };

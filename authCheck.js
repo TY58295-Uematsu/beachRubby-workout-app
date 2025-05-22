@@ -7,14 +7,14 @@ const authCheck = async(
   next,
 ) => {
     // console.log('authCheck run...');
+    const { sessionId } = req.cookies;
+    console.log(req.query);
+
+    const userName = req.query['users.name'];
+    const userInfo = await db('users').where('name', userName).first()
+    const sessionIdFromDB = userInfo.session_id;
+    console.log("sessionId",sessionId,"sessionIdFromDB",sessionIdFromDB);
     try {
-      const { sessionId } = req.cookies;
-    //   console.log(req.query);
-  
-      const userName = req.query['users.name'];
-      const userInfo = await db('users').where('name', userName).first()
-      const sessionIdFromDB = userInfo.session_id;
-    //   console.log("sessionId",sessionId,"sessionIdFromDB",sessionIdFromDB);
     
     if (sessionId !== sessionIdFromDB) throw new Error();
     console.log('authCheck完了!');
