@@ -1,13 +1,10 @@
-const path = require('path');
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const cors = require('cors');
 const app = express();
 const db = require('./knex');
 const authCheck = require('./authCheck');
 const geminiRouter = require('./routes/gemini');
-const { log } = require('console');
 
 function setUpServer() {
   app.use(express.json());
@@ -37,7 +34,6 @@ function setUpServer() {
     // ランダムなセッションIDを生成。（セッションハイジャック対策）
     //時間でセッション切れるようにしたい
     const sessionId = crypto.randomBytes(16).toString('hex');
-    // sessions[sessionId] = { userName, createdAt: Date.now() };
     return sessionId;
   }
 
@@ -77,7 +73,6 @@ function setUpServer() {
 
   app.get('/api', async (req, res) => {
     const test = await sql();
-    // console.log(test);
     res.send(test);
   });
 
@@ -93,7 +88,6 @@ function setUpServer() {
       salt: salt,
     });
     res.status(201).json({ data: userName, redirectTo: '/login' });
-    // res.redirect('/');
   });
 
   app.post('/login', async (req, res) => {
@@ -125,18 +119,14 @@ function setUpServer() {
   app.get('/logout', async (req, res) => {
     const userName = req.query['users.name'];
     const sessionId = req.cookies.sessionId;
-    //dbから削除に変更
-    // delete sessions[sessionId];
     await db('users').where('name', userName).update(`session_id`, null);
     res.clearCookie('sessionId');
-    // res.redirect('/');
     res.status(200).send('you logged out succesfully!');
   });
 
   // 今週の全データを渡す。レコードがなければ作成する。
   app.get('/api/thisweek', async (req, res) => {
     const query = req.query;
-    // console.log('query', query);
     let resObj = await sql(query);
     if (resObj.length === 0) {
       const user = await db('users')
@@ -159,7 +149,6 @@ function setUpServer() {
   //   YutubeURL保存
   app.patch('/api/thisweek/url', async (req, res) => {
     const payload = req.body;
-    // console.log('payload', payload);
     await db('workout')
       .where('id', payload.workout_id)
       .update({ youtube_url: payload.youtube_url });
@@ -209,8 +198,6 @@ function setUpServer() {
       .where('id', '>', id)
       .andWhere('user_id', Number(userId))
       .first();
-    // console.log('nextSunday', nextSunday);
-
     res.status(200).json({ data: nextSunday });
   });
 
@@ -225,11 +212,7 @@ function setUpServer() {
   //チームメイトのやつも含めて全部取ってくる
   app.get('/api/workout', async (req, res) => {
     const payload = req.query;
-    console.log(payload);
-
-    //'wo.workout_day'
     const resArray = await sql({ 'wo.workout_day': payload['wo.workout_day'] });
-    // const resArray = await sql(payload)
     res.status(200).json({ data: resArray });
   });
   return app;
