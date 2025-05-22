@@ -211,6 +211,16 @@ function setUpServer() {
     res.status(201).json({ data: resObj });
   });
 
+  //チームメイトのやつも含めて全部取ってくる
+  app.get('/api/workout', authCheck,async(req, res) => {
+    const payload = req.query;
+    console.log(payload);
+    
+    //'wo.workout_day'
+    const resArray = await sql({ 'wo.workout_day': payload['wo.workout_day'] })
+    // const resArray = await sql(payload)
+    res.status(200).json({data:resArray});
+  })
   return app;
 }
 
