@@ -15,9 +15,7 @@ function setUpServer() {
   // express でcookieを取得
   app.use(cookieParser());
   app.use(express.static('public'));
-  if (process.env.ISTEST !== 'test_no_auth') {
-    app.use(authCheck);
-  }
+
   app.use('/api/gemini', geminiRouter);
 
   const sessions = {};
@@ -71,10 +69,7 @@ function setUpServer() {
     return result;
   };
 
-  app.get('/api', async (req, res) => {
-    const test = await sql();
-    res.send(test);
-  });
+
 
   // ユーザー登録
   app.post('/register', async (req, res) => {
@@ -113,6 +108,15 @@ function setUpServer() {
       sameSite: 'Lax', // クロスサイトリクエスト時のクッキー送信を制御。
     });
     res.status(200).json({ data: userName, redirectTo: '/thisweek' });
+  });
+
+  if (process.env.ISTEST !== 'test_no_auth') {
+    app.use(authCheck);
+  }
+
+  app.get('/api', async (req, res) => {
+    const test = await sql();
+    res.send(test);
   });
 
   // ログアウト
