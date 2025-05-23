@@ -67,9 +67,9 @@
 ## 使用技術
 <img src="https://img.shields.io/badge/-React-00bfff.svg?logo=react&style=flat">
 <img src="https://img.shields.io/badge/-TypeScript-0000cd.svg?logo=typescript&style=flat">
+<img src="https://img.shields.io/badge/-mui-8a2be2.svg?logo=mui&style=flat">
 <img src="https://img.shields.io/badge/-Express-ffa500.svg?logo=express&style=flat">
 <img src="https://img.shields.io/badge/-Knex-019733.svg?logo=knex&style=flat">
 <img src="https://img.shields.io/badge/-Postgre-00ffff.svg?logo=postgresql&style=flat">
-<img src="https://img.shields.io/badge/-mui-8a2be2.svg?logo=mui&style=flat">
 
 
