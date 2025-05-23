@@ -1,4 +1,3 @@
-# auth_sample
 
 <h1 align="center"> 🏈🏖️🚀ビーチラグビー練習会記録アプリ🚀🏖️🏈 </h1> <br>
 <p align="center">
