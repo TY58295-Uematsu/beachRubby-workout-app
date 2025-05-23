@@ -73,3 +73,58 @@
 <img src="https://img.shields.io/badge/-Postgre-00ffff.svg?logo=postgresql&style=flat">
 
 
+## ディレクトリ構成
+- 2025.05.23 時点
+<!-- Treeコマンドを使ってディレクトリ構成を記載 -->
+  ```
+.
+├── .DS_Store
+├── .env
+├── .gitignore
+├── README.md
+├── authCheck.js
+├── db
+│   ├── fixtures.js
+│   ├── migrations
+│   └── seeds
+├── front
+│   ├── .DS_Store
+│   ├── .gitignore
+│   ├── README.md
+│   ├── dist
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   ├── src
+│   └── vite.config.js
+├── front-ts
+│   ├── .gitignore
+│   ├── README.md
+│   ├── dist
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   ├── src
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── index.js
+├── iron-byte-460513-m1-3e0b7f65ae53.json
+├── knex.js
+├── knexfile.js
+├── package-lock.json
+├── package.json
+├── public
+│   └── .DS_Store
+├── routes
+│   └── gemini.js
+├── server.js
+└── test
+    ├── index.test.js
+    └── setup.js
+  ```
